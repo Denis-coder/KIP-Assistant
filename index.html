@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101a2b"><meta name="description" content="Карманный инженерный помощник КИПиА: конвертеры, расчёты и определение маркировок">
+<link rel="manifest" href="manifest.json"><link rel="icon" href="icons/icon-192.png">
+<title>КИПиА — инженерный помощник</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1220;--panel:#131f32;--panel2:#1a2940;--line:#293b55;--text:#edf4ff;--muted:#9fb0c8;--accent:#56a8ff;--good:#54d6a0;--warn:#ffc66d;--bad:#ff7777}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;padding-bottom:calc(78px + env(safe-area-inset-bottom))}
+header{padding:22px 18px 14px;background:linear-gradient(135deg,#142944,#0b1220);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+h1{font-size:21px;margin:0 0 4px}header p{margin:0;color:var(--muted);font-size:13px}.wrap{max-width:900px;margin:auto;padding:16px}
+.tabs{position:fixed;bottom:0;left:0;right:0;z-index:10;display:flex;overflow-x:auto;background:#101b2c;border-top:1px solid var(--line);padding:7px 5px calc(7px + env(safe-area-inset-bottom));gap:4px}
+.tabs button{flex:1;min-width:65px;border:0;background:transparent;color:var(--muted);font-size:11px;padding:7px 4px;border-radius:12px}
+.tabs button .ico{display:block;font-size:19px;margin-bottom:2px}.tabs button.active{background:#203957;color:#fff}
+.page{display:none}.page.active{display:block}.intro{color:var(--muted);font-size:13px;margin:0 0 14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:15px;margin:0 0 13px}
+h2{font-size:18px;margin:0 0 12px}h3{font-size:15px;margin:16px 0 8px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}.field label{font-size:12px;color:var(--muted)}
+input,select,textarea{width:100%;border:1px solid var(--line);background:#0d1727;color:var(--text);padding:11px 12px;border-radius:10px;font:inherit;min-width:0}
+input:focus,select:focus{outline:2px solid #347fc4;border-color:transparent}
+button.action{border:0;border-radius:11px;padding:11px 14px;background:#2678c9;color:white;font-weight:650;font:inherit;cursor:pointer}
+button.secondary{background:#263a55;color:var(--text)}.result{background:#0d1b2c;border:1px solid #294563;border-radius:12px;padding:12px;margin-top:10px}
+.result strong{font-size:20px;color:#8dc5ff;display:block;overflow-wrap:anywhere}.muted{color:var(--muted);font-size:12px}.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--muted);font-weight:600}
+.pill{display:inline-block;background:#203957;border-radius:99px;padding:3px 8px;font-size:11px;color:#b9dcff}
+.notice{border-left:3px solid var(--warn);padding:9px 11px;background:#2a251b;border-radius:7px;color:#ffe0a6;font-size:12px;margin-top:10px}
+.ok{color:var(--good)}.err{color:var(--bad)}.hidden{display:none!important}
+.toolgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.tool{padding:13px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;text-align:left;color:var(--text)}
+.tool b{display:block}.tool small{color:var(--muted)}
+@media(min-width:700px){body{padding-bottom:20px}.tabs{position:sticky;top:75px;bottom:auto;max-width:900px;margin:0 auto;border:1px solid var(--line);border-radius:14px;padding:6px}.wrap{padding-top:20px}.tabs button{font-size:12px}.tabs button .ico{display:inline;margin-right:5px}}
+@media(max-width:390px){.grid{grid-template-columns:1fr}.tabs button{min-width:58px;font-size:10px}.tabs button .ico{font-size:17px}}
+</style></head>
+<body>
+<header><h1>КИПиА · инженерный помощник</h1><p>Расчёты, конвертеры и маркировки — работает офлайн</p></header>
+<nav class="tabs" aria-label="Разделы">
+<button class="active" data-tab="home"><span class="ico">⌂</span>Главная</button>
+<button data-tab="pressure"><span class="ico">◉</span>Давление</button>
+<button data-tab="temp"><span class="ico">♨</span>Темп.</button>
+<button data-tab="flow"><span class="ico">⇢</span>Расход</button>
+<button data-tab="electric"><span class="ico">ϟ</span>Электрика</button>
+<button data-tab="circuits"><span class="ico">⌁</span>Цепи</button>
+<button data-tab="decode"><span class="ico">▦</span>Номиналы</button>
+<button data-tab="metrology"><span class="ico">✓</span>Метрология</button>
+</nav>
+<main class="wrap">
+<section id="home" class="page active">
+<div class="card"><h2>Карманный помощник КИПиА</h2><p class="intro">Выберите нужный инструмент. Все вычисления выполняются на устройстве; подключение к интернету для расчётов не требуется.</p><div class="toolgrid">
+<button class="tool" data-go="decode"><b>▦ Определить номинал</b><small>Цветовые кольца, SMD, коды</small></button>
+<button class="tool" data-go="electric"><b>ϟ Токовая петля</b><small>4–20 мА, шкала, нагрузка</small></button>
+<button class="tool" data-go="temp"><b>♨ Pt100 и термопары</b><small>Сопротивление и температура</small></button>
+<button class="tool" data-go="pressure"><b>◉ Давление</b><small>Единицы и гидростолб</small></button>
+<button class="tool" data-go="flow"><b>⇢ Расход</b><small>Перепад давления, импульсы</small></button>
+<button class="tool" data-go="metrology"><b>✓ Погрешность</b><small>Абсолютная, относительная, приведённая</small></button>
+</div></div>
+<div class="card"><h2>Быстрые справочные значения</h2><table><tr><th>Величина</th><th>Соотношение</th></tr><tr><td>1 бар</td><td>100 000 Па</td></tr><tr><td>1 кгс/см²</td><td>98 066,5 Па</td></tr><tr><td>Стандартная атмосфера</td><td>101 325 Па</td></tr><tr><td>Вода, 1 м столба</td><td>≈ 9,80665 кПа</td></tr><tr><td>Токовый сигнал</td><td>4–20 мА</td></tr></table></div>
+</section>
+<section id="pressure" class="page">
+<p class="intro">Перевод единиц давления и расчёт гидростатического уровня.</p>
+<div class="card"><h2>Конвертер давления</h2><div class="grid"><div class="field"><label>Значение</label><input id="pval" type="number" value="1" step="any"></div><div class="field"><label>Из единицы</label><select id="punit"><option value="1">Па</option><option value="1000">кПа</option><option value="1000000">МПа</option><option value="100000">бар</option><option value="100">мбар</option><option value="101325">атм</option><option value="133.322368">мм рт. ст.</option><option value="9.80665">мм вод. ст.</option><option value="98066.5">кгс/см²</option><option value="6894.757293">psi</option><option value="3386.389">inHg</option><option value="249.0889">inH₂O</option></select></div></div><div id="presOut" class="result"></div></div>
+<div class="card"><h2>Уровень по давлению столба</h2><div class="grid"><div class="field"><label>Перепад давления, кПа</label><input id="hydP" type="number" value="9.80665" step="any"></div><div class="field"><label>Плотность, кг/м³</label><input id="hydRho" type="number" value="1000" step="any"></div><div class="field"><label>g, м/с²</label><input id="hydG" type="number" value="9.80665" step="any"></div></div><div id="hydOut" class="result"></div><p class="muted">Формула h = ΔP / (ρ·g). Для закрытых резервуаров учитывайте схему подключения и давление газовой подушки.</p></div>
+</section>
+<section id="temp" class="page">
+<p class="intro">Температурные шкалы, термосопротивления и ориентировочный расчёт термопары.</p>
+<div class="card"><h2>Температурный конвертер</h2><div class="grid"><div class="field"><label>Значение</label><input id="tval" type="number" value="20" step="any"></div><div class="field"><label>Исходная шкала</label><select id="tunit"><option>°C</option><option>°F</option><option>K</option><option>°R</option></select></div></div><div id="tempOut" class="result"></div></div>
+<div class="card"><h2>Pt100 / Pt500 / Pt1000 (IEC 60751)</h2><div class="grid"><div class="field"><label>Температура, °C</label><input id="ptT" type="number" value="100" step="any"></div><div class="field"><label>Номинал</label><select id="ptNom"><option value="100">Pt100</option><option value="500">Pt500</option><option value="1000">Pt1000</option></select></div></div><div id="ptOut" class="result"></div><p class="muted">Используется уравнение Каллендара — Ван Дюзена для платинового ТС. Обратный расчёт температуры выполняется численно.</p></div>
+<div class="card"><h2>Термопара — ориентир по типу K</h2><div class="grid"><div class="field"><label>Температура, °C</label><input id="tcT" type="number" value="100" step="any"></div></div><div id="tcOut" class="result"></div><div class="notice">Это приближённая оценка для быстрой прикидки, не замена таблицам НСХ IEC 60584 и компенсации холодного спая. Для точных измерений нужна таблица конкретного типа термопары.</div></div>
+</section>
+<section id="flow" class="page">
+<p class="intro">Расход по перепаду давления, импульсному выходу и единицы расхода.</p>
+<div class="card"><h2>Перепад давления ↔ расход</h2><div class="grid"><div class="field"><label>ΔP</label><input id="dp" type="number" value="25" step="any"></div><div class="field"><label>Коэффициент K</label><input id="flowK" type="number" value="2" step="any"></div><div class="field"><label>Расход Q (для обратного расчёта)</label><input id="flowQ" type="number" value="10" step="any"></div></div><div id="flowOut" class="result"></div><p class="muted">Модель Q = K·√ΔP. Коэффициент K должен быть получен из паспорта/градуировки конкретного сужающего устройства.</p></div>
+<div class="card"><h2>Частота импульсов → расход</h2><div class="grid"><div class="field"><label>Частота, Гц</label><input id="freq" type="number" value="10" step="any"></div><div class="field"><label>Импульсов на единицу объёма</label><input id="ppl" type="number" value="100" step="any"></div></div><div id="pulseOut" class="result"></div><p class="muted">Если коэффициент задан в имп/м³, результат будет в м³/с и м³/ч.</p></div>
+<div class="card"><h2>Перевод расхода</h2><div class="grid"><div class="field"><label>м³/ч</label><input id="m3h" type="number" value="1" step="any"></div></div><div id="flowConv" class="result"></div></div>
+</section>
+<section id="electric" class="page">
+<p class="intro">Электрические величины, закон Ома, токовая петля и нагрузка.</p>
+<div class="card"><h2>4–20 мА ↔ инженерное значение</h2><div class="grid"><div class="field"><label>Ток, мА</label><input id="ma" type="number" value="12" step="any"></div><div class="field"><label>LRV</label><input id="lrv" type="number" value="0" step="any"></div><div class="field"><label>URV</label><input id="urv" type="number" value="100" step="any"></div></div><div id="maOut" class="result"></div><p class="muted">Процент шкалы = (I − 4)/16 × 100%. Индикация NAMUR NE43 ориентировочная; учитывайте конфигурацию передатчика.</p></div>
+<div class="card"><h2>Нагрузка токовой петли</h2><div class="grid"><div class="field"><label>Питание, В</label><input id="supply" type="number" value="24" step="any"></div><div class="field"><label>Минимальное напряжение на датчике, В</label><input id="txmin" type="number" value="12" step="any"></div><div class="field"><label>Падение на барьерах/кабеле, В</label><input id="drops" type="number" value="2" step="any"></div><div class="field"><label>Ток, мА</label><input id="loopma" type="number" value="20" step="any"></div></div><div id="loadOut" class="result"></div></div>
+<div class="card"><h2>Закон Ома и мощность</h2><div class="grid"><div class="field"><label>Напряжение, В</label><input id="ov" type="number" value="24" step="any"></div><div class="field"><label>Сопротивление, Ом</label><input id="or" type="number" value="1000" step="any"></div></div><div id="ohmOut" class="result"></div></div>
+<div class="card"><h2>Трёхфазная мощность</h2><div class="grid"><div class="field"><label>Линейное напряжение, В</label><input id="u3" type="number" value="400"></div><div class="field"><label>Ток, А</label><input id="i3" type="number" value="10"></div><div class="field"><label>cos φ</label><input id="cos3" type="number" value="0.85" step="any"></div></div><div id="threeOut" class="result"></div></div>
+</section>
+<section id="circuits" class="page">
+<p class="intro">Расчёты простых электрических цепей и подбор компонентов.</p>
+<div class="card"><h2>Последовательное / параллельное соединение</h2><div class="grid"><div class="field"><label>Тип элементов</label><select id="cType"><option value="R">Резисторы (Ом)</option><option value="C">Конденсаторы (мкФ)</option><option value="L">Катушки (мГн, без взаимной индукции)</option></select></div><div class="field"><label>Значения через запятую</label><input id="cVals" value="100, 220, 470"></div></div><div id="chainOut" class="result"></div></div>
+<div class="card"><h2>Делитель напряжения</h2><div class="grid"><div class="field"><label>Uвх, В</label><input id="divU" type="number" value="24"></div><div class="field"><label>R1, Ом</label><input id="divR1" type="number" value="10000"></div><div class="field"><label>R2, Ом</label><input id="divR2" type="number" value="10000"></div><div class="field"><label>Нагрузка Rн, Ом (0 = нет)</label><input id="divRL" type="number" value="0"></div></div><div id="dividerOut" class="result"></div></div>
+<div class="card"><h2>Резистор светодиода</h2><div class="grid"><div class="field"><label>Питание, В</label><input id="ledU" type="number" value="24"></div><div class="field"><label>Падение на LED, В</label><input id="ledV" type="number" value="2"></div><div class="field"><label>Ток, мА</label><input id="ledI" type="number" value="10"></div></div><div id="ledOut" class="result"></div></div>
+<div class="card"><h2>RC-цепь</h2><div class="grid"><div class="field"><label>R, кОм</label><input id="rcR" type="number" value="10"></div><div class="field"><label>C, мкФ</label><input id="rcC" type="number" value="10"></div></div><div id="rcOut" class="result"></div></div>
+<div class="card"><h2>Падение напряжения на кабеле</h2><div class="grid"><div class="field"><label>Материал</label><select id="wireMat"><option value="0.0175">Медь</option><option value="0.0282">Алюминий</option></select></div><div class="field"><label>Длина в одну сторону, м</label><input id="wireLen" type="number" value="100"></div><div class="field"><label>Сечение, мм²</label><input id="wireS" type="number" value="1.5"></div><div class="field"><label>Ток, А</label><input id="wireI" type="number" value="0.02"></div></div><div id="wireOut" class="result"></div><p class="muted">Упрощённый расчёт по сопротивлению проводника при 20 °C; контакты и температурный коэффициент не учтены.</p></div>
+</section>
+<section id="decode" class="page">
+<p class="intro">Расшифровка распространённых маркировок компонентов. Если код неоднозначен, показываются варианты — проверяйте даташит.</p>
+<div class="card"><h2>Определитель номиналов</h2><div class="field"><label>Тип компонента</label><select id="dKind"><option value="res">Резистор</option><option value="cap">Конденсатор</option><option value="ind">Катушка индуктивности</option></select></div>
+<div class="field"><label>Способ маркировки</label><select id="dMode"><option value="smd">SMD / цифровой код</option><option value="bands">Цветовые кольца резистора</option></select></div>
+<div class="field"><label>Маркировка или цветовые кольца</label><input id="dCode" value="472" placeholder="Например: 472, 4R7, 01C"></div>
+<div id="bandFields" class="hidden"><div class="grid">
+<div class="field"><label>1-е кольцо</label><select id="b1"></select></div><div class="field"><label>2-е кольцо</label><select id="b2"></select></div><div class="field"><label>3-е кольцо (множитель)</label><select id="b3"></select></div><div class="field"><label>Допуск</label><select id="btol"></select></div>
+</div></div>
+<div class="row"><button class="action" id="decodeBtn">Определить номинал</button><button class="action secondary" id="e24Btn">Показать ряд E24</button></div><div id="decodeOut" class="result">Введите маркировку и нажмите «Определить номинал».</div><div id="e24Out" class="result hidden"></div>
+<div class="notice">SMD-коды могут повторяться у разных производителей. Для EIA-96 требуется таблица кодов и буквенных множителей; неизвестные или неоднозначные обозначения не следует трактовать как достоверный номинал.</div></div>
+<div class="card"><h2>Быстрые примеры</h2><table><tr><th>Маркировка</th><th>Расшифровка</th></tr><tr><td>472</td><td>4,7 кОм (резистор) / 4,7 нФ (конденсатор — если код 3-значный в пФ)</td></tr><tr><td>103</td><td>10 кОм / 10 нФ (зависит от типа)</td></tr><tr><td>4R7</td><td>4,7 Ом</td></tr><tr><td>R100</td><td>0,1 Ом</td></tr><tr><td>104</td><td>100 нФ = 0,1 мкФ</td></tr><tr><td>2R2</td><td>2,2 (единицы зависят от компонента)</td></tr></table></div>
+</section>
+<section id="metrology" class="page">
+<p class="intro">Базовые расчёты погрешности и пересчёт сигнала в проценты диапазона.</p>
+<div class="card"><h2>Погрешность измерения</h2><div class="grid"><div class="field"><label>Измеренное значение</label><input id="meas" type="number" value="10.2" step="any"></div><div class="field"><label>Эталонное значение</label><input id="ref" type="number" value="10" step="any"></div><div class="field"><label>Нижний предел диапазона</label><input id="rangeL" type="number" value="0"></div><div class="field"><label>Верхний предел диапазона</label><input id="rangeH" type="number" value="100"></div></div><div id="errOut" class="result"></div></div>
+<div class="card"><h2>Класс точности → предел основной погрешности</h2><div class="grid"><div class="field"><label>Класс точности, %</label><input id="acc" type="number" value="1.0" step="any"></div><div class="field"><label>Нормирующее значение</label><input id="norm" type="number" value="100" step="any"></div></div><div id="classOut" class="result"></div><p class="muted">Применимость формулы зависит от способа нормирования класса точности конкретного прибора и его стандарта.</p></div>
+</section>
+</main>
+<script>
+const $=id=>document.getElementById(id), num=id=>Number($(id).value), fmt=(x,d=5)=>Number.isFinite(x)?Number(x.toFixed(d)).toLocaleString('ru-RU',{maximumFractionDigits:d}):'—';
+function result(id,html){$(id).innerHTML=html}
+function bind(ids,fn){ids.forEach(id=>$(id).addEventListener('input',fn));fn()}
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>show(b.dataset.tab));
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>show(b.dataset.go));
+function show(id){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));window.scrollTo({top:0,behavior:'smooth'})}
+const pUnits=[['Па',1],['кПа',1000],['МПа',1e6],['бар',1e5],['мбар',100],['атм',101325],['мм рт. ст.',133.322368],['мм вод. ст.',9.80665],['кгс/см²',98066.5],['psi',6894.757293],['inHg',3386.389],['inH₂O',249.0889]];
+function calcP(){let pa=num('pval')*num('punit');result('presOut',`<strong>${fmt(pa)} Па</strong>`+pUnits.map(([n,k])=>`<div>${n}: ${fmt(pa/k,7)}</div>`).join(''))}
+bind(['pval','punit'],calcP);bind(['hydP','hydRho','hydG'],()=>{let h=num('hydP')*1000/(num('hydRho')*num('hydG'));result('hydOut',`<strong>${fmt(h)} м</strong><div>${fmt(h*100)} см · ${fmt(h*1000)} мм</div>`)});
+function calcTemp(){let v=num('tval'),u=$('tunit').value,c=u==='°C'?v:u==='°F'?(v-32)*5/9:u==='K'?v-273.15:(v-491.67)*5/9;result('tempOut',`<strong>${fmt(c)} °C</strong><div>${fmt(c*9/5+32)} °F · ${fmt(c+273.15)} K · ${fmt((c+273.15)*9/5)} °R</div>`)}
+bind(['tval','tunit'],calcTemp);
+function ptR(t,r0){let A=3.9083e-3,B=-5.775e-7,C=-4.183e-12;return t>=0?r0*(1+A*t+B*t*t):r0*(1+A*t+B*t*t+C*(t-100)*t*t*t)}
+bind(['ptT','ptNom'],()=>{let t=num('ptT'),r=num('ptNom');result('ptOut',`<strong>${fmt(ptR(t,r),4)} Ом</strong><div>R₀ = ${r} Ом · ${t<0?'учтён коэффициент C для отрицательных температур':'температура выше 0 °C'}</div>`)});
+bind(['tcT'],()=>{let t=num('tcT');let mv= t>=0?(0.039450128*t+0.000002362237*t*t-0.000000000328589*t*t*t):0.039450128*t+0.000002362237*t*t;result('tcOut',`<strong>≈ ${fmt(mv,3)} мВ</strong><div>Приближённая оценка относительно 0 °C</div>`)});
+bind(['dp','flowK','flowQ'],()=>{let q=num('flowK')*Math.sqrt(Math.max(0,num('dp'))),dp=num('flowQ')**2/(num('flowK')**2);result('flowOut',`<strong>Q = ${fmt(q)}</strong><div>Обратный расчёт для введённого Q: ΔP = ${fmt(dp)}</div>`)});
+bind(['freq','ppl'],()=>{let q=num('freq')/num('ppl');result('pulseOut',`<strong>${fmt(q*3600)} м³/ч</strong><div>${fmt(q)} м³/с · ${fmt(num('freq')*60/num('ppl'))} м³/мин</div>`)});
+bind(['m3h'],()=>{let q=num('m3h');result('flowConv',`<strong>${fmt(q*1000/60)} л/мин</strong><div>${fmt(q*1000)} л/ч · ${fmt(q/3600)} м³/с · ${fmt(q*0.588578)} US gal/min</div>`)});
+bind(['ma','lrv','urv'],()=>{let m=num('ma'),lo=num('lrv'),hi=num('urv'),pct=(m-4)/16*100,v=lo+(hi-lo)*pct;let state=m<3.6?'ниже 3,6 мА — возможный сигнал неисправности':m>21?'выше 21 мА — возможная аварийная сигнализация':m<4?'ниже диапазона 4 мА':m>20?'выше диапазона 20 мА':'в рабочем диапазоне';result('maOut',`<strong>${fmt(v)}</strong><div>${fmt(pct)} % диапазона · ${state}</div>`)});
+bind(['supply','txmin','drops','loopma'],()=>{let r=(num('supply')-num('txmin')-num('drops'))/(num('loopma')/1000);result('loadOut',`<strong>Максимальная нагрузка: ${fmt(r)} Ом</strong><div>Запас напряжения после вычета минимального напряжения датчика и падений в линии.</div>${r<0?'<span class="err">Недостаточно напряжения питания.</span>':''}`)});
+bind(['ov','or'],()=>{let u=num('ov'),r=num('or'),i=u/r;result('ohmOut',`<strong>${fmt(i*1000)} мА</strong><div>I = U/R · P = ${fmt(u*i)} Вт · R = ${fmt(r)} Ом</div>`)});
+bind(['u3','i3','cos3'],()=>{let p=Math.sqrt(3)*num('u3')*num('i3')*num('cos3');result('threeOut',`<strong>${fmt(p/1000)} кВт</strong><div>Активная мощность P = √3 · Uл · Iл · cosφ</div>`)});
+bind(['cType','cVals'],()=>{let a=$('cVals').value.split(/[;,\\s]+/).map(Number).filter(x=>x>0&&Number.isFinite(x));if(!a.length){result('chainOut','Введите положительные значения');return}let s=a.reduce((x,y)=>x+y,0),p=1/a.reduce((x,y)=>x+1/y,0),typ=$('cType').value;result('chainOut',`<strong>${typ==='C'?'Параллельно: '+fmt(s)+' мкФ':'Последовательно: '+fmt(s)+(typ==='R'?' Ом':' мГн')}</strong><div>${typ==='C'?'Последовательно: '+fmt(p)+' мкФ':'Параллельно: '+fmt(p)+(typ==='R'?' Ом':' мГн')}</div><div class="muted">Элементов: ${a.length}. Для катушек взаимная индукция не учитывается.</div>`)});
+bind(['divU','divR1','divR2','divRL'],()=>{let u=num('divU'),r1=num('divR1'),r2=num('divR2'),rl=num('divRL'),re=rl>0?r2*rl/(r2+rl):r2,v=u*re/(r1+re);result('dividerOut',`<strong>${fmt(v)} В на выходе</strong><div>Без нагрузки: ${fmt(u*r2/(r1+r2))} В · Ток делителя: ${fmt(u/(r1+re)*1000)} мА · Rнижн. экв.: ${fmt(re)} Ом</div>`)});
+const e24=[10,11,12,13,15,16,18,20,22,24,27,30,33,36,39,43,47,51,56,62,68,75,82,91];
+bind(['ledU','ledV','ledI'],()=>{let r=(num('ledU')-num('ledV'))/(num('ledI')/1000),e=e24.map(x=>x*Math.pow(10,Math.floor(Math.log10(Math.max(r,1e-12))))).filter(x=>x>=r).sort((a,b)=>a-b)[0];result('ledOut',`<strong>R расчётное: ${fmt(r)} Ом</strong><div>Ближайший E24 не ниже расчётного: ${fmt(e)} Ом · Мощность на нём: ${fmt((num('ledU')-num('ledV'))**2/e)} Вт</div>`)});
+bind(['rcR','rcC'],()=>{let tau=num('rcR')*1000*num('rcC')/1e6,fc=1/(2*Math.PI*tau);result('rcOut',`<strong>τ = ${fmt(tau)} с</strong><div>Частота среза: ${fmt(fc)} Гц · Время установления ~5τ: ${fmt(5*tau)} с</div>`)});
+bind(['wireMat','wireLen','wireS','wireI'],()=>{let r=num('wireMat')*2*num('wireLen')/num('wireS'),u=num('wireI')*r;result('wireOut',`<strong>Падение: ${fmt(u)} В</strong><div>Сопротивление петли: ${fmt(r)} Ом · Потери: ${fmt(num('wireI')**2*r)} Вт</div>`)});
+bind(['meas','ref','rangeL','rangeH'],()=>{let d=num('meas')-num('ref'),rel=num('ref')!==0?d/num('ref')*100:NaN,span=num('rangeH')-num('rangeL'),red=d/span*100;result('errOut',`<strong>${fmt(d)} — абсолютная погрешность</strong><div>Относительная: ${fmt(rel)} % · Приведённая к диапазону: ${fmt(red)} %</div>`)});
+bind(['acc','norm'],()=>{let e=num('acc')/100*num('norm');result('classOut',`<strong>±${fmt(e)}</strong><div>Предел допускаемой основной погрешности при заданном нормирующем значении.</div>`)});
+// resistor colour bands
+const colors=[['Чёрный',0,'#111111'],['Коричневый',1,'#754321'],['Красный',2,'#e53935'],['Оранжевый',3,'#fb8c00'],['Жёлтый',4,'#fdd835'],['Зелёный',5,'#43a047'],['Синий',6,'#1e88e5'],['Фиолетовый',7,'#8e24aa'],['Серый',8,'#9e9e9e'],['Белый',9,'#eeeeee']];
+function fillColors(){['b1','b2','b3'].forEach(id=>$(id).innerHTML=colors.map(c=>`<option value="${c[1]}">${c[0]}</option>`).join(''));$('btol').innerHTML=[['Золотой',5],['Серебряный',10],['Коричневый',1],['Красный',2],['Зелёный',0.5],['Синий',0.25],['Фиолетовый',0.1],['Серый',0.05]].map(x=>`<option value="${x[1]}">${x[0]} (±${x[1]}%)</option>`).join('')}
+fillColors();
+function modeUI(){$('bandFields').classList.toggle('hidden',$('dMode').value!=='bands');$('dCode').placeholder=$('dMode').value==='bands'?'Выберите кольца ниже':'Например: 472, 4R7, 104'}
+$('dMode').onchange=modeUI;modeUI();
+function decode(){let kind=$('dKind').value,mode=$('dMode').value,code=$('dCode').value.trim().toUpperCase().replace(/Ω/g,'').replace(/,/g,'.');let val=null,unit='',desc='';
+if(mode==='bands'){if(kind!=='res'){result('decodeOut','Цветовая маркировка в этом режиме поддерживается для резисторов.');return}let a=Number($('b1').value),b=Number($('b2').value),m=Number($('b3').value),tol=Number($('btol').value);val=(10*a+b)*Math.pow(10,m);unit='Ом';desc=`Допуск ±${tol}%. Диапазон: ${fmt(val*(1-tol/100))}–${fmt(val*(1+tol/100))} Ом.`}
+else if(kind==='res'){let m=code.match(/^([0-9]{3,4})$/);if(m){let n=code.length===4?3:2;val=Number(code.slice(0,n))*Math.pow(10,Number(code.slice(n)));unit='Ом'}else{let x=code.replace(/[RrKkMm]/g,'.').replace(/^\\./,'0.');let suf=code.match(/[RrKkMm]$/)?.[0]?.toUpperCase();let n=Number(x);if(Number.isFinite(n)&&suf){val=n*(suf==='R'?1:suf==='K'?1e3:1e6);unit='Ом'}else if(Number.isFinite(n)&&code.includes('.')){val=n;unit='Ом'}}}
+else if(kind==='cap'){let m=code.match(/^(\d{2,3})([A-Z]?)$/);if(m){val=Number(m[1].slice(0,-1))*Math.pow(10,Number(m[1].slice(-1)));unit='пФ';desc='Трёхзначный код: первые две цифры — значащие, третья — множитель в пФ.'}else{let x=code.match(/^(\d+(?:\.\d+)?)(PF|NF|UF|MF|F)$/);if(x){val=Number(x[1]);unit=x[2].replace('UF','мкФ').replace('NF','нФ').replace('PF','пФ').replace('MF','мФ');}}}
+else if(kind==='ind'){let m=code.match(/^(\d{2,3})$/);if(m){val=Number(m[1].slice(0,-1))*Math.pow(10,Number(m[1].slice(-1)));unit='мкГн';desc='Трёхзначный код индуктивности трактуется как значение в мкГн; проверьте документацию производителя.'}else{let x=code.match(/^(\d+(?:\.\d+)?)(NH|UH|MH|H)$/);if(x){val=Number(x[1]);unit=x[2]}}}
+if(val===null||!Number.isFinite(val)){result('decodeOut',`<span class="err">Не удалось однозначно распознать «${code}».</span><div>Проверьте тип компонента, код и паспорт производителя.</div>`);return}
+let pretty=val,prettyUnit=unit;if(kind==='res'){if(val>=1e6){pretty=val/1e6;prettyUnit='МОм'}else if(val>=1e3){pretty=val/1e3;prettyUnit='кОм'}}else if(kind==='cap'){if(unit==='пФ'&&val>=1e6){pretty=val/1e6;prettyUnit='мкФ'}else if(unit==='пФ'&&val>=1e3){pretty=val/1e3;prettyUnit='нФ'}}result('decodeOut',`<strong>${fmt(pretty,8)} ${prettyUnit}</strong><div>${desc}</div>${kind==='res'?`<div>В кОм: ${fmt(val/1000)} · в МОм: ${fmt(val/1e6)}</div>`:''}`)}
+$('decodeBtn').onclick=decode;$('e24Btn').onclick=()=>{$('e24Out').classList.remove('hidden');$('e24Out').innerHTML='<b>Ряд E24 (±5%):</b><div>'+e24.join(' · ')+'</div><p class="muted">Для получения номинала умножьте выбранное число на 10ⁿ.</p>'};
+</script>
+<script>if('serviceWorker' in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));</script>
+</body></html>
