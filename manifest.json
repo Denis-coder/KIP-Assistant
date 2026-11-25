@@ -1,12 +1,10 @@
 {
-  "name": "КИПиА — инженерный помощник",
-  "short_name": "КИПиА",
-  "start_url": "./",
-  "scope": "./",
+  "name": "КИП Конвертер — инженерный помощник",
+  "short_name": "КИП Помощник",
+  "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0b1220",
-  "theme_color": "#101a2b",
-  "lang": "ru",
+  "background_color": "#080f1d",
+  "theme_color": "#080f1d",
   "icons": [
     {
       "src": "icons/icon-192.png",
